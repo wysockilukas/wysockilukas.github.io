@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Wykres z Chart.js</title>
+        
+        <!-- Biblioteka moment.js -->
+        <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+        
+        <!-- Biblioteka Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+        
+        <!-- Adapter moment dla Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1"></script>
+    </head>
+    
+<body>
+
+<canvas id="myChart" width="400" height="200"></canvas>
+
+<script>
+
+
+function losujWartosc(dzienTygodnia) {
+    if (dzienTygodnia === 6 || dzienTygodnia === 0) { // sobota lub niedziela
+        return Math.floor(Math.random() * (40 - 30 + 1)) + 30;
+    } else {
+        return Math.floor(Math.random() * (4000 - 3000 + 1)) + 3000;
+    }
+}
+
+function generujDane() {
+    const uzytkownicy = {};
+    let aktualnaData = new Date('2018-01-01');
+    const koncowaData = new Date('2023-08-31');
+
+    while (aktualnaData <= koncowaData) {
+        const rok = aktualnaData.getFullYear();
+        const miesiac = String(aktualnaData.getMonth() + 1).padStart(2, '0'); // dodajemy 1, bo miesiące są indeksowane od 0
+        const dzien = String(aktualnaData.getDate()).padStart(2, '0');
+        const klucz = `${rok}-${miesiac}-${dzien}`;
+
+        const dzienTygodnia = aktualnaData.getDay();
+        const wartosc = losujWartosc(dzienTygodnia);
+
+        // Aby odzwierciedlić trend wzrostowy, dodajemy niewielką wartość do każdej kolejnej daty
+        const mnoznikTrendu = (aktualnaData - new Date('2018-01-01')) / (koncowaData - new Date('2018-01-01'));
+        const korektaTrendu = Math.floor(mnoznikTrendu * 1000);
+
+        uzytkownicy[klucz] = wartosc + korektaTrendu;
+
+        aktualnaData.setDate(aktualnaData.getDate() + 1); // przechodzimy do następnego dnia
+    }
+
+    return uzytkownicy;
+}
+
+const uzytkownicy = generujDane();
+console.log(uzytkownicy);
+
+
+
+
+    const pracownicy = {
+        '2018-01-31': 12000,
+        '2018-02-28': 11900,
+        // ... dodaj więcej danych według potrzeb
+    };
+
+    const config = {
+    type: 'bar', // domyślny typ dla wszystkich serii
+    data: {
+        labels: Object.keys(uzytkownicy),
+        datasets: [{
+            label: 'Użytkownicy',
+            data: Object.values(uzytkownicy),
+            type: 'bar', // nadpisuje domyślny typ
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+            yAxisID: 'y' // używa lewej osi Y
+        },
+        {
+            label: 'Pracownicy',
+            data: Object.values(pracownicy),
+            type: 'line', // nadpisuje domyślny typ
+            pointStyle: 'circle',
+            fill: false,
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 2,
+            showLine: false, // wyłącza linię dla pracowników
+            yAxisID: 'y1' // używa prawej osi Y
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true, // zaczyna oś Y od zera dla użytkowników
+                max: 6000 // maksymalna wartość dla użytkowników
+            },
+            y1: {
+                position: 'right',
+                beginAtZero: true, // zaczyna oś Y od zera dla pracowników
+                max: 12000, // maksymalna wartość dla pracowników
+                grid: {
+                    drawOnChartArea: false, // tylko siatka dla użytkowników
+                }
+            }
+        }
+    }
+};
+
+const myChart = new Chart(
+    document.getElementById('myChart'),
+    config
+);
+
+
+</script>
+
+</body>
+</html>
