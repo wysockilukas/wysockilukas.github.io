@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Praca w Budżetówce</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="pracawbudzetowce_css.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="filter-section">
+        <select id="positions" multiple class="form-control mb-3"></select>
+        <button id="selectAll" class="btn btn-primary mr-2">Zaznacz wszystko</button>
+        <button id="deselectAll" class="btn btn-secondary">Odznacz wszystko</button>
+    </div>
+    <div class="list-section mt-5">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Urząd</th>
+                    <th>Dział</th>
+                    <th>Lokalizacja</th>
+                    <th>Stanowisko</th>
+                    <th>Ważne do</th>
+                </tr>
+            </thead>
+            <tbody id="dataList"></tbody>
+        </table>
+    </div>
+</div>
+
+<script src="pracawbudzetowce_js.js"></script>
+</body>
+</html>
