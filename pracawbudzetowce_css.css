@@ -1,0 +1,9 @@
+.filter-section {
+    display: flex;
+    align-items: center;
+}
+
+#positions {
+    width: 50%;
+    height: 150px;
+}
