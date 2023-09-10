@@ -37,6 +37,22 @@
         .filter-container input[type="checkbox"] {
             margin-right: 5px;
         }
+        .legend {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        .legend-icon {
+            width: 25px;
+            height: 41px;
+            margin-right: 5px;
+        }
         @media (max-width: 768px) {
             .filter-container {
                 top: 60px;
@@ -70,6 +86,17 @@
   </div>
 </div>
 
+<div class="legend">
+    <div class="legend-item">
+        <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png" alt="Nabory" class="legend-icon">
+        Nabory
+    </div>
+    <div class="legend-item">
+        <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png" alt="ZUS" class="legend-icon">
+        ZUS
+    </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -92,12 +119,25 @@
         });
         L.marker([52.2225747, 20.9401911], {icon: customIcon}).addTo(map);
 
+        const naboryIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41]
+        });
+
+        const zusIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41]
+        });
+
         function displayMarkers(data, filter = false) {
             markers.clearLayers();
             Object.values(data).forEach(item => {
                 if (item.wspolrzedne && (!filter || (item.wyksztalcenie && item.wyksztalcenie.toLowerCase().includes('średnie')))) {
                     const [lat, lng] = item.wspolrzedne;
-                    const marker = L.marker([lat, lng]).addTo(markers);
+                    const markerIcon = item.source === 'nabory' ? naboryIcon : zusIcon;
+                    const marker = L.marker([lat, lng], {icon: markerIcon}).addTo(markers);
                     marker.on('click', function() {
                         modalContent.innerHTML = `
                             <strong>Stanowisko:</strong> ${item.stanowisko}<br>
@@ -114,15 +154,20 @@
             });
         }
 
-        fetch('https://pracawbudzetowce-default-rtdb.europe-west1.firebasedatabase.app/nabory.json')
-            .then(response => response.json())
-            .then(data => {
-                displayMarkers(data, true);
+        Promise.all([
+            fetch('https://pracawbudzetowce-default-rtdb.europe-west1.firebasedatabase.app/nabory.json').then(res => res.json()),
+            fetch('https://pracawbudzetowce-default-rtdb.europe-west1.firebasedatabase.app/zus.json').then(res => res.json())
+        ]).then(([naboryData, zusData]) => {
+            const combinedData = {...naboryData, ...zusData};
+            Object.keys(naboryData).forEach(key => combinedData[key].source = 'nabory');
+            Object.keys(zusData).forEach(key => combinedData[key].source = 'zus');
 
-                educationFilter.addEventListener('change', function() {
-                    displayMarkers(data, this.checked);
-                });
+            displayMarkers(combinedData, true);
+
+            educationFilter.addEventListener('change', function() {
+                displayMarkers(combinedData, this.checked);
             });
+        });
     });
 </script>
 
