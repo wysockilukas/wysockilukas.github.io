@@ -11,6 +11,10 @@
             height: 600px;
             width: 100%;
         }
+        .modal-body {
+            max-height: 400px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -57,15 +61,31 @@
         fetch('https://pracawbudzetowce-default-rtdb.europe-west1.firebasedatabase.app/nabory.json')
             .then(response => response.json())
             .then(data => {
+                const groupedData = {};
+
                 Object.values(data).forEach(item => {
-                    const [lat, lng] = item.wspolrzedne;
+                    if (item.wspolrzedne) {
+                        const key = item.wspolrzedne.join(',');
+                        if (!groupedData[key]) {
+                            groupedData[key] = [];
+                        }
+                        groupedData[key].push(item);
+                    }
+                });
+
+                Object.keys(groupedData).forEach(key => {
+                    const [lat, lng] = key.split(',').map(Number);
                     const marker = L.marker([lat, lng]).addTo(map);
                     marker.on('click', function() {
-                        modalContent.innerHTML = `
+                        modalContent.innerHTML = groupedData[key].map(item => `
                             <strong>Stanowisko:</strong> ${item.stanowisko}<br>
                             <strong>Urząd:</strong> ${item.urzad}<br>
-                            <strong>Dział:</strong> ${item.dzial}
-                        `;
+                            <strong>Dział:</strong> ${item.dzial}<br>
+                            <strong>Miejsce pracy:</strong> ${item.miejsce_pracy}<br>
+                            <strong>Wykształcenie:</strong> ${item.wyksztalcenie}<br>
+                            <a href="${item.adres}" target="_blank">Link do oferty</a>
+                            <hr>
+                        `).join('');
                         $('#infoModal').modal('show');
                     });
                 });
