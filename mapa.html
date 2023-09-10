@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa Warszawy</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         #map {
             height: 600px;
@@ -16,21 +17,57 @@
 
 <div id="map"></div>
 
+<!-- Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="infoModalLabel">Informacje o stanowisku</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modalContent">
+        <!-- Content will be filled dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const map = L.map('map').setView([52.2337172, 21.071432235636493], 12);
+        const modalContent = document.getElementById('modalContent');
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
+
+        // Custom marker for your location
+        const customIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41]
+        });
+        L.marker([52.2225747, 20.9401911], {icon: customIcon}).addTo(map);
 
         fetch('https://pracawbudzetowce-default-rtdb.europe-west1.firebasedatabase.app/nabory.json')
             .then(response => response.json())
             .then(data => {
                 Object.values(data).forEach(item => {
                     const [lat, lng] = item.wspolrzedne;
-                    L.marker([lat, lng]).addTo(map);
+                    const marker = L.marker([lat, lng]).addTo(map);
+                    marker.on('click', function() {
+                        modalContent.innerHTML = `
+                            <strong>Stanowisko:</strong> ${item.stanowisko}<br>
+                            <strong>Urząd:</strong> ${item.urzad}<br>
+                            <strong>Dział:</strong> ${item.dzial}
+                        `;
+                        $('#infoModal').modal('show');
+                    });
                 });
             });
     });
