@@ -95,6 +95,10 @@
         <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png" alt="ZUS" class="legend-icon">
         ZUS
     </div>
+    <div class="legend-item">
+        <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png" alt="Kultura" class="legend-icon">
+        Kultura
+    </div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -131,12 +135,18 @@
             iconAnchor: [12, 41]
         });
 
+        const kulturaIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41]
+        });
+
         function displayMarkers(data, filter = false) {
             markers.clearLayers();
             Object.values(data).forEach(item => {
                 if (item.wspolrzedne && (!filter || (item.wyksztalcenie && item.wyksztalcenie.toLowerCase().includes('średnie')))) {
                     const [lat, lng] = item.wspolrzedne;
-                    const markerIcon = item.source === 'nabory' ? naboryIcon : zusIcon;
+                    const markerIcon = item.source === 'nabory' ? naboryIcon : (item.source === 'zus' ? zusIcon : kulturaIcon);
                     const marker = L.marker([lat, lng], {icon: markerIcon}).addTo(markers);
                     marker.on('click', function() {
                         modalContent.innerHTML = `
@@ -156,11 +166,13 @@
 
         Promise.all([
             fetch('https://pracawbudzetowce-default-rtdb.europe-west1.firebasedatabase.app/nabory.json').then(res => res.json()),
-            fetch('https://pracawbudzetowce-default-rtdb.europe-west1.firebasedatabase.app/zus.json').then(res => res.json())
-        ]).then(([naboryData, zusData]) => {
-            const combinedData = {...naboryData, ...zusData};
+            fetch('https://pracawbudzetowce-default-rtdb.europe-west1.firebasedatabase.app/zus.json').then(res => res.json()),
+            fetch('https://pracawbudzetowce-default-rtdb.europe-west1.firebasedatabase.app/kultura.json').then(res => res.json())
+        ]).then(([naboryData, zusData, kulturaData]) => {
+            const combinedData = {...naboryData, ...zusData, ...kulturaData};
             Object.keys(naboryData).forEach(key => combinedData[key].source = 'nabory');
             Object.keys(zusData).forEach(key => combinedData[key].source = 'zus');
+            Object.keys(kulturaData).forEach(key => combinedData[key].source = 'kultura');
 
             displayMarkers(combinedData, true);
 
