@@ -15,11 +15,43 @@
             max-height: 400px;
             overflow-y: auto;
         }
+        .filter-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .filter-container label {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+        .filter-container input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        @media (max-width: 768px) {
+            .filter-container {
+                top: 60px;
+                right: 5px;
+                padding: 5px;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div id="map"></div>
+<div class="filter-container">
+    <label><input type="checkbox" id="educationFilter" checked> Wykształcenie średnie</label>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
@@ -45,6 +77,8 @@
     document.addEventListener("DOMContentLoaded", function() {
         const map = L.map('map').setView([52.2337172, 21.071432235636493], 12);
         const modalContent = document.getElementById('modalContent');
+        const educationFilter = document.getElementById('educationFilter');
+        let markers = L.layerGroup().addTo(map);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -58,26 +92,14 @@
         });
         L.marker([52.2225747, 20.9401911], {icon: customIcon}).addTo(map);
 
-        fetch('https://pracawbudzetowce-default-rtdb.europe-west1.firebasedatabase.app/nabory.json')
-            .then(response => response.json())
-            .then(data => {
-                const groupedData = {};
-
-                Object.values(data).forEach(item => {
-                    if (item.wspolrzedne) {
-                        const key = item.wspolrzedne.join(',');
-                        if (!groupedData[key]) {
-                            groupedData[key] = [];
-                        }
-                        groupedData[key].push(item);
-                    }
-                });
-
-                Object.keys(groupedData).forEach(key => {
-                    const [lat, lng] = key.split(',').map(Number);
-                    const marker = L.marker([lat, lng]).addTo(map);
+        function displayMarkers(data, filter = false) {
+            markers.clearLayers();
+            Object.values(data).forEach(item => {
+                if (item.wspolrzedne && (!filter || (item.wyksztalcenie && item.wyksztalcenie.toLowerCase().includes('średnie')))) {
+                    const [lat, lng] = item.wspolrzedne;
+                    const marker = L.marker([lat, lng]).addTo(markers);
                     marker.on('click', function() {
-                        modalContent.innerHTML = groupedData[key].map(item => `
+                        modalContent.innerHTML = `
                             <strong>Stanowisko:</strong> ${item.stanowisko}<br>
                             <strong>Urząd:</strong> ${item.urzad}<br>
                             <strong>Dział:</strong> ${item.dzial}<br>
@@ -85,9 +107,20 @@
                             <strong>Wykształcenie:</strong> ${item.wyksztalcenie}<br>
                             <a href="${item.adres}" target="_blank">Link do oferty</a>
                             <hr>
-                        `).join('');
+                        `;
                         $('#infoModal').modal('show');
                     });
+                }
+            });
+        }
+
+        fetch('https://pracawbudzetowce-default-rtdb.europe-west1.firebasedatabase.app/nabory.json')
+            .then(response => response.json())
+            .then(data => {
+                displayMarkers(data, true);
+
+                educationFilter.addEventListener('change', function() {
+                    displayMarkers(data, this.checked);
                 });
             });
     });
