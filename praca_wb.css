@@ -1,53 +1,204 @@
-        #map {
-            height: 600px;
-            width: 100%;
-        }
-        .modal-body {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .filter-container {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
-            background-color: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-        .filter-container label {
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-            margin-bottom: 0;
-        }
-        .filter-container input[type="checkbox"] {
-            margin-right: 5px;
-        }
-        .legend {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 10px;
-        }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-right: 20px;
-        }
-        .legend-icon {
-            width: 25px;
-            height: 41px;
-            margin-right: 5px;
-        }
-        @media (max-width: 768px) {
-            .filter-container {
-                top: 60px;
-                right: 5px;
-                padding: 5px;
-            }
-        }
+#map {
+    height: 50vh; /* 50% wysokości ekranu */
+    width: 100%;
+}
+
+
+.modal-body {
+    max-height: 400px;
+    overflow-y: auto;
+}
+.filter-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.filter-container label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin-bottom: 0;
+}
+.filter-container input[type="checkbox"] {
+    margin-right: 5px;
+}
+.legend {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+.legend-icon {
+    width: 25px;
+    height: 41px;
+    margin-right: 5px;
+}
+@media (max-width: 768px) {
+    .filter-container {
+        top: 60px;
+        right: 5px;
+        padding: 5px;
+    }
+}
+
+
+
+
+
+
+
+#table-container {
+    position: fixed;
+    bottom: 0;
+    left: 5%;
+    width: 90%;
+    height: 45%;
+    overflow: auto;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#table-header, #table-body > div {
+    display: flex;
+    justify-content: space-between;
+}
+
+.table-cell {
+    flex: 1;
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+    font-size: 0.8rem;
+}
+
+#table-header .table-cell {
+    background-color: #f5f5f5;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+#table-body > div:hover {
+    background-color: #e5e5e5;
+    cursor: pointer;
+}
+
+.table-cell:nth-child(1),
+.table-cell:nth-child(2),
+.table-cell:nth-child(3) {
+    text-align: left;
+}
+
+
+
+.icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 1.5rem; /* Dostosuj rozmiar ikony */
+    color: #007bff; /* Kolor ikony */
+}
+
+.icon-button:hover {
+    color: #0056b3; /* Kolor ikony po najechaniu */
+}
+
+
+
+
+
+
+
+
+/* Red */
+.icon_color_red {
+    color: #ff0000;
+  }
+  
+  /* Green */
+  .icon_color_green {
+    color: #24ad22;
+  }
+  
+  /* Blue */
+  .icon_color_blue {
+    color: #2b82cb;
+  }
+  
+  /* Yellow */
+  .icon_color_yellow {
+    color: #d39e00;
+  }
+  
+  /* Magenta */
+  .icon_color_magenta {
+    color: #ff00ff;
+  }
+  
+  /* Cyan */
+  .icon_color_cyan {
+    color: #00ffff;
+  }
+  
+  /* Purple */
+  .icon_color_purple {
+    color: #800080;
+  }
+  
+  /* Orange */
+  .icon_color_orange {
+    color: #ffa500;
+  }
+  
+  /* Brown */
+  .icon_color_brown {
+    color: #a52a2a;
+  }
+  
+  /* Black */
+  .icon_color_black {
+    color: #000000;
+  }
+
+
+  i.licon {
+
+    font-size: 2rem;
+}
+
+
+.faded {
+    opacity: 0.5;
+}
+
+.legend-item  {
+    cursor: pointer;
+}
+
+/* Media query dla małych ekranów, np. telefonów komórkowych */
+@media (max-width: 768px) {
+    #map {
+        height: 40vh;
+    }
+
+    #table-container {
+        height: 55vh;
+        top: 45vh;
+        bottom: auto;
+    }
+}
