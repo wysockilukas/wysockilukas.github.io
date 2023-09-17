@@ -75,7 +75,7 @@ function createIcon(type, i_id) {
 
 
 // Zmienna globalna do przechowywania markerów
-// let glb_markers = {};
+let glb_marker_modals= {};
 
 function displayMarkers(filteredData, map, markers) {
     // console.log('displayMarkers', filteredData.length);  
@@ -87,25 +87,35 @@ function displayMarkers(filteredData, map, markers) {
     filteredData.forEach(item => {
         if (item.wspolrzedne) {
             const [lat, lng] = item.wspolrzedne;
+            const id_marker = `m_${lat}_${lng}`
+            console.log(id_marker)
             const marker = L.marker([lat, lng], { icon: createIcon(item.source) }).addTo(markers);
-    
+
+            let  modal_html = `
+            <strong>Stanowisko:</strong> ${item.stanowisko}<br>
+            <strong>Urząd:</strong> ${item.urzad}<br>
+            <strong>Dział:</strong> ${item.dzial}<br>
+            <strong>Miejsce pracy:</strong> ${item.miejsce_pracy}<br>
+            <strong>Wykształcenie:</strong> ${item.wyksztalcenie}<br>
+            <a href="${item.adres}" target="_blank">Link do oferty</a>
+            <hr>
+             `;
+
+            if (Object(glb_marker_modals).hasOwnProperty(id_marker)) {
+                modal_html = glb_marker_modals[id_marker] + modal_html
+            }
+
+            glb_marker_modals[id_marker] = modal_html
     
             marker.on('click', function() {
-                modalContent.innerHTML = `
-                    <strong>Stanowisko:</strong> ${item.stanowisko}<br>
-                    <strong>Urząd:</strong> ${item.urzad}<br>
-                    <strong>Dział:</strong> ${item.dzial}<br>
-                    <strong>Miejsce pracy:</strong> ${item.miejsce_pracy}<br>
-                    <strong>Wykształcenie:</strong> ${item.wyksztalcenie}<br>
-                    <a href="${item.adres}" target="_blank">Link do oferty</a>
-                    <hr>
-                `;
+                modalContent.innerHTML = modal_html
                 $('#infoModal').modal('show');
             });
         }
 
     });
 }
+
 
 
 function filterData(data, filterEducation = false) {
