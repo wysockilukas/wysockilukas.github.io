@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+        
+    <!-- Biblioteka Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    
+    <!-- Adapter moment dla Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+
+    <div class="dashboard">
+
+        <!-- Iterate for each machine -->
+        <div class="machine" id="MISVM_section">
+            <h1>MISVM</h1>
+            <div class="tiles">
+                <div class="tile">
+                    <h2>CPU Usage (%)</h2>
+                    <p class="value" id="MISVM_cpuValue">--</p>
+                </div>
+                <div class="tile">
+                    <h2>RAM Usage (GB)</h2>
+                    <p class="value" id="MISVM_ramValue">--</p>
+                </div>
+                <div class="tile">
+                    <h2>Average CPU (%)</h2>
+                    <p class="value" id="MISVM_avgCpuValue">--</p>
+                </div>
+            </div>
+        <!-- Graphs for trends -->
+        <div class="graphs">
+            <div class="graph" id="MISVMcpuGraph">
+                <h2>CPU Usage Trend</h2>
+                <canvas id="MISVMcpuCanvas"></canvas>
+            </div>
+            <div class="graph" id="MISVMramGraph">
+                <h2>RAM Usage Trend</h2>
+                <canvas id="MISVMramCanvas"></canvas>
+            </div>
+        </div>
+
+        
+        <!-- Docker stats -->
+        <div class="docker-stats">
+            <h2>Docker Containers</h2>
+            <ul id="MISVMDockerList">
+                <!-- List of docker containers will be populated here -->
+            </ul>
+        </div>    
+    
+    </div>
+
+        <div class="machine" id="dr7appexa_section">
+            <h1>dr7appexa</h1>
+            <div class="tiles">
+                <div class="tile">
+                    <h2>CPU Usage (%)</h2>
+                    <p class="value" id="dr7appexa_cpuValue">--</p>
+                </div>
+                <div class="tile">
+                    <h2>RAM Usage (GB)</h2>
+                    <p class="value" id="dr7appexa_ramValue">--</p>
+                </div>
+                <div class="tile">
+                    <h2>Average CPU (%)</h2>
+                    <p class="value" id="dr7appexa_avgCpuValue">--</p>
+                </div>
+            </div>
+
+        <!-- Graphs for trends -->
+        <div class="graphs">
+            <div class="graph" id="dr7appexacpuGraph">
+                <h2>CPU Usage Trend</h2>
+                <canvas id="dr7appexacpuCanvas"></canvas>
+            </div>
+            <div class="graph" id="dr7appexaramGraph">
+                <h2>RAM Usage Trend</h2>
+                <canvas id="dr7appexaramCanvas"></canvas>
+            </div>
+        </div>
+
+        
+        <!-- Docker stats -->
+        <div class="docker-stats">
+            <h2>Docker Containers</h2>
+            <ul id="dr7appexaDockerList">
+                <!-- List of docker containers will be populated here -->
+            </ul>
+        </div>    
+
+        </div>
+
+        <div class="machine" id="p7appexa_section">
+            <h1>p7appexa</h1>
+            <div class="tiles">
+                <div class="tile">
+                    <h2>CPU Usage (%)</h2>
+                    <p class="value" id="p7appexa_cpuValue">--</p>
+                </div>
+                <div class="tile">
+                    <h2>RAM Usage (GB)</h2>
+                    <p class="value" id="p7appexa_ramValue">--</p>
+                </div>
+                <div class="tile">
+                    <h2>Average CPU (%)</h2>
+                    <p class="value" id="p7appexa_avgCpuValue">--</p>
+                </div>
+            </div>
+
+
+        <!-- Graphs for trends -->
+        <div class="graphs">
+            <div class="graph" id="p7appexacpuGraph">
+                <h2>CPU Usage Trend</h2>
+                <canvas id="p7appexacpuCanvas"></canvas>
+            </div>
+            <div class="graph" id="p7appexaramGraph">
+                <h2>RAM Usage Trend</h2>
+                <canvas id="p7appexaramCanvas"></canvas>
+            </div>
+        </div>
+
+        
+        <!-- Docker stats -->
+        <div class="docker-stats">
+            <h2>Docker Containers</h2>
+            <ul id="p7appexaDockerList">
+                <!-- List of docker containers will be populated here -->
+            </ul>
+        </div>    
+
+        </div>
+
+    </div>
+
+    <script src="dane.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
