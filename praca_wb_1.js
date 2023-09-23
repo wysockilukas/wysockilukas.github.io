@@ -60,9 +60,13 @@ function createLegend() {
 
 
 
-function createIcon(type, i_id) {
+function createIcon(type, nowy) {
+    let nowy_klasa
+    if (nowy) {
+        nowy_klasa = 'icon_new'
+    }
     return L.divIcon({
-        className: `custom-icon icon-${type} icon_id_${i_id}`,
+        className: `custom-icon icon-${type} ${nowy_klasa}`,
         html: `<i class="fas ${iconMapping[type]}"></i>`,
         iconSize: [25, 41],
         iconAnchor: [12, 41]
@@ -88,8 +92,8 @@ function displayMarkers(filteredData, map, markers) {
         if (item.wspolrzedne) {
             const [lat, lng] = item.wspolrzedne;
             const id_marker = `m_${lat}_${lng}`
-            console.log(id_marker)
-            const marker = L.marker([lat, lng], { icon: createIcon(item.source) }).addTo(markers);
+            // console.log(id_marker)
+            const marker = L.marker([lat, lng], { icon: createIcon(item.source, item.nowy) }).addTo(markers);
 
             let  modal_html = `
             <strong>Stanowisko:</strong> ${item.stanowisko}<br>
@@ -117,7 +121,6 @@ function displayMarkers(filteredData, map, markers) {
 }
 
 
-
 function filterData(data, filterEducation = false) {
     return Object.values(data).filter(item => {
         // if (!item.wspolrzedne) return false;
@@ -131,14 +134,18 @@ function prepareTableData(data) {
     // Sortowanie danych według daty "ważne do"
     const sortedData = data.sort((a, b) => new Date(a.waznedo) - new Date(b.waznedo));
 
+
+
     // Przygotowanie danych do wyświetlenia w tabeli
     return sortedData.map(item => {
+        // console.log(item.nowy)
         return {
             urzad: item.urzad,
             dzial: item.dzial,
             stanowisko: `<a href="${item.adres}" target="_blank">${item.stanowisko}</a>`,
             waznedo: item.waznedo,
-            wspolrzedne: item.wspolrzedne
+            wspolrzedne: item.wspolrzedne,
+            nowy: item.nowy
         };
     });
 }
@@ -150,7 +157,6 @@ function populateTable(data, map) {
     // console.log('populateTable', data.length);  
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = '';  // Czyszczenie istniejących wierszy
-
     data.forEach(item => {
         const row = document.createElement('div');
         row.classList.add('table-row');
@@ -167,8 +173,14 @@ function populateTable(data, map) {
 
         const stanowiskoCell = document.createElement('div');
         stanowiskoCell.classList.add('table-cell');
-        stanowiskoCell.innerHTML = `<a href="${item.adres}" target="_blank">${item.stanowisko}</a>`;
+        if (item.nowy) {
+            stanowiskoCell.classList.add('a_nowy');
+        }
+
+        // stanowiskoCell.innerHTML = `<a href="${item.adres}"  target="_blank">${item.stanowisko}</a>`;
+        stanowiskoCell.innerHTML = item.stanowisko
         row.appendChild(stanowiskoCell);
+        // console.log(item.nowy)
 
         const waznedoCell = document.createElement('div');
         waznedoCell.classList.add('table-cell');
@@ -225,6 +237,7 @@ document.addEventListener("DOMContentLoaded", function() {
         Object.keys(naboryData).forEach(key => combinedData[key].source = 'nabory');
         Object.keys(zusData).forEach(key => combinedData[key].source = 'zus');
         Object.keys(kulturaData).forEach(key => combinedData[key].source = 'kultura');
+        // console.log(combinedData)
 
         // Filtrowanie danych na podstawie stanu checkboxa
         const filteredData = filterData(combinedData, educationFilter.checked);

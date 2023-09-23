@@ -120,7 +120,9 @@
 
 
 
-
+div.a_nowy a {
+    color: red
+}
 
 
 
@@ -201,4 +203,19 @@
         top: 45vh;
         bottom: auto;
     }
+}
+
+
+
+div.custom-icon.icon_new i {
+    border: 3px solid #FF5733;
+    border-radius: 50%;
+    padding: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    background-color: rgba(255, 248, 225, 0.5); /* Przezroczyste tło */
+    transition: transform 0.3s ease;
+}
+
+div.custom-icon.icon_new i:hover {
+    transform: scale(1.1);
 }
