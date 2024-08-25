@@ -93,12 +93,6 @@ function displayMarkers(filteredData, map, markers) {
     });
 }
 
-function filterData(data, filterEducation = false) {
-    return Object.values(data).filter(item => {
-        if (filterEducation && (!item.wyksztalcenie || !item.wyksztalcenie.toLowerCase().includes('średnie'))) return false;
-        return true;
-    });
-}
 
 function prepareTableData(data) {
     const sortedData = data.sort((a, b) => new Date(a.waznedo) - new Date(b.waznedo));
@@ -109,6 +103,7 @@ function prepareTableData(data) {
             dzial: item.dzial,
             stanowisko: `<a href="${item.adres}" target="_blank">${item.stanowisko}</a>`,
             waznedo: item.waznedo,
+            llm_score: item.llm_score,  // Nowa kolumna
             wspolrzedne: item.wspolrzedne,
             nowy: item.nowy
         };
@@ -146,6 +141,12 @@ function populateTable(data, map) {
         waznedoCell.textContent = item.waznedo;
         row.appendChild(waznedoCell);
 
+        // Dodaj komórkę llm_score
+        const llmScoreCell = document.createElement('div');
+        llmScoreCell.classList.add('table-cell');
+        llmScoreCell.textContent = item.llm_score;
+        row.appendChild(llmScoreCell);
+
         const actionCell = document.createElement('div');
         actionCell.className = 'table-cell';
         if (item.wspolrzedne) {
@@ -172,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const map = initializeMap();
     
     const modalContent = document.getElementById('modalContent');
-    const educationFilter = document.getElementById('educationFilter');
+
     let markers = L.layerGroup().addTo(map);
 
     L.marker([52.2225747, 20.9401911], { icon: createIcon('dom') }).addTo(map);
@@ -185,16 +186,13 @@ document.addEventListener("DOMContentLoaded", function() {
         Object.keys(naboryData).forEach(key => combinedData[key].source = 'nabory');
         Object.keys(kulturaData).forEach(key => combinedData[key].source = 'kultura');
 
-        const filteredData = filterData(combinedData, educationFilter.checked);
-
+        
+        const filteredData = Object.values(combinedData); // Wersja bez filtrowania
+        
         displayMarkers(filteredData, map, markers);
         createLegend();
         populateTable(prepareTableData(filteredData), map);
 
-        educationFilter.addEventListener('change', function() {
-            const filteredData = filterData(combinedData, this.checked);
-            displayMarkers(filteredData, map, markers);
-            populateTable(prepareTableData(filteredData), map);
-        });
+
     });
 });
