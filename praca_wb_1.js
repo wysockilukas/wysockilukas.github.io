@@ -1,14 +1,8 @@
-
-
-
 const iconMapping = {
     dom: 'licon fa-map-marker-alt icon_color_red ',
-    zus: 'licon fa-map-marker-alt icon_color_green  ',
     nabory: 'licon fa-map-marker-alt icon_color_blue ',
     kultura: 'licon fa-map-marker-alt icon_color_yellow '
 };
-
-
 
 function initializeMap() {
     const map = L.map('map').setView([52.2337172, 21.071432235636493], 12);
@@ -18,47 +12,37 @@ function initializeMap() {
     return map;
 }
 
-
 function createLegend() {
     const legendContainer = document.querySelector('.legend');
     legendContainer.innerHTML = ''; // Wyczyść istniejącą zawartość
     
     for (let category in iconMapping) {
-        // Utwórz elementy dla pozycji w legendzie
         const legendItem = document.createElement('div');
         legendItem.className = 'legend-item';
     
         const icon = document.createElement('i');
-        icon.className = 'icona_legendy fas ' + iconMapping[category]; // Dodajemy klasę 'fas' tutaj
+        icon.className = 'icona_legendy fas ' + iconMapping[category]; 
     
         const label = document.createElement('span');
-        label.textContent = category.charAt(0).toUpperCase() + category.slice(1); // Capitalize the category name
+        label.textContent = category.charAt(0).toUpperCase() + category.slice(1); 
     
-        // Dodaj ikonę i etykietę do pozycji w legendzie
         legendItem.appendChild(icon);
         legendItem.appendChild(label);
 
-        // Dodaj procedurę obsługi zdarzeń do ikony
         legendItem.addEventListener('click', function() {
             const markers = document.querySelectorAll(`.icon-${category}`);
             if (icon.classList.contains('faded')) {
-                // Jeśli ikona jest wyblakła, przywróć jej oryginalny wygląd i pokaż markery
                 icon.classList.remove('faded');
                 markers.forEach(marker => marker.style.display = '');
             } else {
-                // W przeciwnym razie zrób ikonę wyblakłą i ukryj markery
                 icon.classList.add('faded');
                 markers.forEach(marker => marker.style.display = 'none');
             }
         });        
     
-        // Dodaj pozycję do głównego kontenera legendy
         legendContainer.appendChild(legendItem);
     }
-    
 }
-
-
 
 function createIcon(type, nowy) {
     let nowy_klasa
@@ -73,29 +57,18 @@ function createIcon(type, nowy) {
     });
 }
 
-
-
-
-
-
-// Zmienna globalna do przechowywania markerów
 let glb_marker_modals= {};
 
 function displayMarkers(filteredData, map, markers) {
-    // console.log('displayMarkers', filteredData.length);  
     markers.clearLayers();
-
-    // Czyszczenie globalnej tablicy markerów
-    // glb_markers = {};
 
     filteredData.forEach(item => {
         if (item.wspolrzedne) {
             const [lat, lng] = item.wspolrzedne;
-            const id_marker = `m_${lat}_${lng}`
-            // console.log(id_marker)
+            const id_marker = `m_${lat}_${lng}`;
             const marker = L.marker([lat, lng], { icon: createIcon(item.source, item.nowy) }).addTo(markers);
 
-            let  modal_html = `
+            let modal_html = `
             <strong>Stanowisko:</strong> ${item.stanowisko}<br>
             <strong>Urząd:</strong> ${item.urzad}<br>
             <strong>Dział:</strong> ${item.dzial}<br>
@@ -106,13 +79,13 @@ function displayMarkers(filteredData, map, markers) {
              `;
 
             if (Object(glb_marker_modals).hasOwnProperty(id_marker)) {
-                modal_html = glb_marker_modals[id_marker] + modal_html
+                modal_html = glb_marker_modals[id_marker] + modal_html;
             }
 
-            glb_marker_modals[id_marker] = modal_html
+            glb_marker_modals[id_marker] = modal_html;
     
             marker.on('click', function() {
-                modalContent.innerHTML = modal_html
+                modalContent.innerHTML = modal_html;
                 $('#infoModal').modal('show');
             });
         }
@@ -120,25 +93,17 @@ function displayMarkers(filteredData, map, markers) {
     });
 }
 
-
 function filterData(data, filterEducation = false) {
     return Object.values(data).filter(item => {
-        // if (!item.wspolrzedne) return false;
         if (filterEducation && (!item.wyksztalcenie || !item.wyksztalcenie.toLowerCase().includes('średnie'))) return false;
         return true;
     });
 }
 
-
 function prepareTableData(data) {
-    // Sortowanie danych według daty "ważne do"
     const sortedData = data.sort((a, b) => new Date(a.waznedo) - new Date(b.waznedo));
 
-
-
-    // Przygotowanie danych do wyświetlenia w tabeli
     return sortedData.map(item => {
-        // console.log(item.nowy)
         return {
             urzad: item.urzad,
             dzial: item.dzial,
@@ -150,13 +115,9 @@ function prepareTableData(data) {
     });
 }
 
-
-
-
 function populateTable(data, map) {
-    // console.log('populateTable', data.length);  
     const tableBody = document.getElementById('table-body');
-    tableBody.innerHTML = '';  // Czyszczenie istniejących wierszy
+    tableBody.innerHTML = '';  
     data.forEach(item => {
         const row = document.createElement('div');
         row.classList.add('table-row');
@@ -177,23 +138,20 @@ function populateTable(data, map) {
             stanowiskoCell.classList.add('a_nowy');
         }
 
-        // stanowiskoCell.innerHTML = `<a href="${item.adres}"  target="_blank">${item.stanowisko}</a>`;
-        stanowiskoCell.innerHTML = item.stanowisko
+        stanowiskoCell.innerHTML = item.stanowisko;
         row.appendChild(stanowiskoCell);
-        // console.log(item.nowy)
 
         const waznedoCell = document.createElement('div');
         waznedoCell.classList.add('table-cell');
         waznedoCell.textContent = item.waznedo;
         row.appendChild(waznedoCell);
 
-        // Kolumna z przyciskiem "pokaż na mapie"
         const actionCell = document.createElement('div');
         actionCell.className = 'table-cell';
         if (item.wspolrzedne) {
             const showOnMapIcon = document.createElement('i');
             showOnMapIcon.className = 'fas fa-search-location';
-            showOnMapIcon.title = 'Pokaż na mapie'; // Dodanie podpowiedzi po najechaniu myszką
+            showOnMapIcon.title = 'Pokaż na mapie';
             
             const showOnMapBtn = document.createElement('button');
             showOnMapBtn.className = 'icon-button';
@@ -203,19 +161,12 @@ function populateTable(data, map) {
             });
             
             actionCell.appendChild(showOnMapBtn);
-            
         }
         row.appendChild(actionCell);        
 
-
         tableBody.appendChild(row);
-        
     });
 }
-
-
-
-
 
 document.addEventListener("DOMContentLoaded", function() {
     const map = initializeMap();
@@ -224,37 +175,26 @@ document.addEventListener("DOMContentLoaded", function() {
     const educationFilter = document.getElementById('educationFilter');
     let markers = L.layerGroup().addTo(map);
 
-    // L.marker([52.2225747, 20.9401911], { icon: icons.customIcon }).addTo(map);
     L.marker([52.2225747, 20.9401911], { icon: createIcon('dom') }).addTo(map);
-
 
     Promise.all([
         fetch('https://pracawbudzetowce-default-rtdb.europe-west1.firebasedatabase.app/nabory.json').then(res => res.json()),
-        fetch('https://pracawbudzetowce-default-rtdb.europe-west1.firebasedatabase.app/zus.json').then(res => res.json()),
         fetch('https://pracawbudzetowce-default-rtdb.europe-west1.firebasedatabase.app/kultura.json').then(res => res.json())
-    ]).then(([naboryData, zusData, kulturaData]) => {
-        const combinedData = { ...naboryData, ...zusData, ...kulturaData };
+    ]).then(([naboryData, kulturaData]) => {
+        const combinedData = { ...naboryData, ...kulturaData };
         Object.keys(naboryData).forEach(key => combinedData[key].source = 'nabory');
-        Object.keys(zusData).forEach(key => combinedData[key].source = 'zus');
         Object.keys(kulturaData).forEach(key => combinedData[key].source = 'kultura');
-        // console.log(combinedData)
 
-        // Filtrowanie danych na podstawie stanu checkboxa
         const filteredData = filterData(combinedData, educationFilter.checked);
-    
-               
+
         displayMarkers(filteredData, map, markers);
-        createLegend()
+        createLegend();
         populateTable(prepareTableData(filteredData), map);
 
         educationFilter.addEventListener('change', function() {
-            // console.log("Checkbox changed!");  // Dodaj tę linię
             const filteredData = filterData(combinedData, this.checked);
-            // displayMarkers(filteredData, map, markers);
             displayMarkers(filteredData, map, markers);
             populateTable(prepareTableData(filteredData), map);
-            
         });
-        
     });
 });
