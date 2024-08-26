@@ -103,7 +103,8 @@ function prepareTableData(data) {
             dzial: item.dzial,
             stanowisko: `<a href="${item.adres}" target="_blank">${item.stanowisko}</a>`,
             waznedo: item.waznedo,
-            llm_score: item.llm_score,  // Nowa kolumna
+            llm_score: item.llm_score,  
+            llm_score_2: item.llm_score_2,  
             wspolrzedne: item.wspolrzedne,
             nowy: item.nowy
         };
@@ -146,6 +147,12 @@ function populateTable(data, map) {
         llmScoreCell.classList.add('table-cell');
         llmScoreCell.textContent = item.llm_score;
         row.appendChild(llmScoreCell);
+
+        // Dodaj komórkę llm_score_2
+        const llmScore_2Cell = document.createElement('div');
+        llmScore_2Cell.classList.add('table-cell');
+        llmScore_2Cell.textContent = item.llm_score_2;
+        row.appendChild(llmScore_2Cell);        
 
         const actionCell = document.createElement('div');
         actionCell.className = 'table-cell';
