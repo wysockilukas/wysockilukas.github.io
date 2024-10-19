@@ -10,29 +10,42 @@
             text-align: center;
             padding: 10px;
             box-sizing: border-box;
-            overflow: hidden;
-            height: 100vh;
+            height: 97vh;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
+            align-items: center;
             justify-content: space-between;
         }
         #image-container {
-            margin: 10px 0;
-            flex: 1;
-            max-height: 40%;
+            height: 400px;
+            max-width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #word-image {
+            max-height: 100%;
+            width: auto;
         }
         #word-container {
-            font-size: 1.5em;
+            font-size: 1.5rem;
             margin-bottom: 10px;
         }
         .button {
             padding: 10px;
-            font-size: 1em;
-            margin: 5px;
+            font-size: 1.3rem;
             cursor: pointer;
         }
+        #buttons-container {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            max-width: 300px;
+            margin-top: 15px;
+        }
         #feedback {
-            font-size: 1.2em;
+            font-size: 1em;
             margin-top: 10px;
         }
         .highlight {
@@ -44,7 +57,7 @@
             font-weight: bold;
         }
         #score-container {
-            font-size: 1em;
+            font-size: 0.9em;
             margin-top: 10px;
             padding: 5px;
             background-color: #f0f0f0;
@@ -53,14 +66,17 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
         #timer {
-            font-size: 1em;
+            font-size: 0.9em;
             margin-top: 10px;
+        }
+        #next-button {
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
     <div id="image-container">
-        <img id="word-image" src="" alt="Słowo" style="height: 100%;">
+        <img id="word-image" src="" alt="Słowo">
     </div>
     <div id="word-container">
         <span id="word"></span>
@@ -75,9 +91,7 @@
         <div>Niepoprawne odpowiedzi: <span id="incorrect-score">0</span></div>
     </div>
     <div id="timer">Pozostały czas: <span id="time-left">10</span> sekund</div>
-    <div style="margin-top: 20px;">
-        <button id="next-button" class="button" onclick="nextWord()">Następny obrazek</button>
-    </div>
+    <button id="next-button" class="button" onclick="nextWord()">Następny obrazek</button>
 
     <script>
 const words = [
