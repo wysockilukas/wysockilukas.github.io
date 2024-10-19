@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ortografia - Ż czy RZ?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #image-container {
+            margin: 20px 0;
+            height: 400px;
+        }
+        #word-container {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 1.5em;
+            margin: 10px;
+            cursor: pointer;
+        }
+        #feedback {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+        .highlight {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+        #score-container {
+            font-size: 1.5em;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #timer {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="image-container">
+        <img id="word-image" src="" alt="Słowo" style="height: 100%;">
+    </div>
+    <div id="word-container">
+        <span id="word"></span>
+    </div>
+    <div id="buttons-container">
+        <button id="rz-button" class="button" onclick="checkAnswer('rz')">rz</button>
+        <button id="ż-button" class="button" onclick="checkAnswer('ż')">ż</button>
+    </div>
+    <div id="feedback"></div>
+    <div id="score-container">
+        <div>Poprawne odpowiedzi: <span id="correct-score">0</span></div>
+        <div>Niepoprawne odpowiedzi: <span id="incorrect-score">0</span></div>
+    </div>
+    <div id="timer">Pozostały czas: <span id="time-left">10</span> sekund</div>
+    <div style="margin-top: 20px;">
+        <button id="next-button" class="button" onclick="nextWord()">Następny obrazek</button>
+    </div>
+
+    <script>
+const words = [
+{ image: 'images/brzoza.png', word: 'b...oza', correct: 'rz' },
+{ image: 'images/burza.png', word: 'bu...a', correct: 'rz' },
+{ image: 'images/chrzan.png', word: 'ch...an', correct: 'rz' },
+{ image: 'images/drzewo.png', word: 'd...ewo', correct: 'rz' },
+{ image: 'images/filiżanka.png', word: 'fili...anka', correct: 'ż' },
+{ image: 'images/grzebień.png', word: 'g...ebień', correct: 'rz' },
+{ image: 'images/grzyb.png', word: 'g...yb', correct: 'rz' },
+{ image: 'images/jarzębina.png', word: 'ja...ębina', correct: 'rz' },
+{ image: 'images/jeż.png', word: 'je...', correct: 'ż' },
+{ image: 'images/jeżyny.png', word: 'je...yny', correct: 'ż' },
+{ image: 'images/kałuże.png', word: 'kału...e', correct: 'ż' },
+{ image: 'images/korzenie.png', word: 'ko...enie', correct: 'rz' },
+{ image: 'images/kożuch.png', word: 'ko...uch', correct: 'ż' },
+{ image: 'images/krzesło.png', word: 'k...esło', correct: 'rz' },
+{ image: 'images/księżyc.png', word: 'księ...yc', correct: 'ż' },
+{ image: 'images/leżak.png', word: 'le...ak', correct: 'ż' },
+{ image: 'images/nosorożec.png', word: 'nosoro...ec', correct: 'ż' },
+{ image: 'images/nożyczki.png', word: 'no...yczki', correct: 'ż' },
+{ image: 'images/orzech.png', word: 'o...ech', correct: 'rz' },
+{ image: 'images/plaża.png', word: 'pla...a', correct: 'ż' },
+{ image: 'images/przyjaciele.png', word: 'p...yjaciele', correct: 'rz' },
+{ image: 'images/rzeka.png', word: '...eka', correct: 'rz' },
+{ image: 'images/rzodkiewka.png', word: '...odkiewka', correct: 'rz' },
+{ image: 'images/róża.png', word: 'ró...a', correct: 'ż' },
+{ image: 'images/różowy.png', word: 'ró...owy', correct: 'ż' },
+{ image: 'images/strażak.png', word: 'stra...ak', correct: 'ż' },
+{ image: 'images/trzmiel.png', word: 't...miel', correct: 'rz' },
+{ image: 'images/warzywa.png', word: 'wa...ywa', correct: 'rz' },
+{ image: 'images/ważka.png', word: 'wa...ka', correct: 'ż' },
+{ image: 'images/wierzba.png', word: 'wie...ba', correct: 'rz' },
+{ image: 'images/wieża.png', word: 'wie...a', correct: 'ż' },
+{ image: 'images/wrzos.png', word: 'w...os', correct: 'rz' },
+{ image: 'images/wyżeł.png', word: 'wy...eł', correct: 'ż' },
+{ image: 'images/wóz strażacki.png', word: 'wóz stra...acki', correct: 'ż' },
+{ image: 'images/wąż.png', word: 'wą...', correct: 'ż' },
+{ image: 'images/zwierzęta.png', word: 'zwie...ęta', correct: 'rz' },
+{ image: 'images/łyżka.png', word: 'ły...ka', correct: 'ż' },
+{ image: 'images/łyżwy.png', word: 'ły...wy', correct: 'ż' },
+{ image: 'images/łóżko.png', word: 'łó...ko', correct: 'ż' },
+{ image: 'images/żaba.png', word: '...aba', correct: 'ż' },
+{ image: 'images/żaglówka.png', word: '...aglówka', correct: 'ż' },
+{ image: 'images/żelazko.png', word: '...elazko', correct: 'ż' },
+{ image: 'images/żmija.png', word: '...mija', correct: 'ż' },
+{ image: 'images/żonkil.png', word: '...onkil', correct: 'ż' },
+{ image: 'images/żołędzie.png', word: '...ołędzie', correct: 'ż' },
+{ image: 'images/żubr.png', word: '...ubr', correct: 'ż' },
+{ image: 'images/żuk.png', word: '...uk', correct: 'ż' },
+{ image: 'images/żuraw.png', word: '...uraw', correct: 'ż' },
+{ image: 'images/żyrafa.png', word: '...yrafa', correct: 'ż' },
+{ image: 'images/żyrandol.png', word: '...yrandol', correct: 'ż' },
+{ image: 'images/żółtko.png', word: '...ółtko', correct: 'ż' },
+{ image: 'images/żółty.png', word: '...ółty', correct: 'ż' },
+{ image: 'images/żółw.png', word: '...ółw', correct: 'ż' }
+];
+        let currentWord;
+        let correctScore = 0;
+        let incorrectScore = 0;
+        let timer;
+        let timeLeft = 10;
+        let isAnswering = false;
+
+        function getRandomWord() {
+            return words[Math.floor(Math.random() * words.length)];
+        }
+
+        function loadNewWord() {
+            currentWord = getRandomWord();
+            document.getElementById('word-image').src = currentWord.image;
+            document.getElementById('word').innerHTML = currentWord.word;
+            document.getElementById('feedback').innerHTML = '';
+            document.getElementById('rz-button').disabled = false;
+            document.getElementById('ż-button').disabled = false;
+            document.getElementById('next-button').disabled = true;
+            resetTimer();
+            isAnswering = true;
+        }
+
+        function checkAnswer(answer) {
+            if (!isAnswering) return;
+            clearInterval(timer);
+            const feedbackElement = document.getElementById('feedback');
+            document.getElementById('rz-button').disabled = true;
+            document.getElementById('ż-button').disabled = true;
+            document.getElementById('next-button').disabled = false;
+
+            if (answer === currentWord.correct) {
+                feedbackElement.innerHTML = 'Brawo! To jest poprawna odpowiedź!';
+                feedbackElement.classList.remove('incorrect');
+                feedbackElement.classList.add('highlight');
+                document.getElementById('word').innerHTML = currentWord.word.replace('...', `<span class="highlight">${answer}</span>`);
+                correctScore++;
+                document.getElementById('correct-score').innerText = correctScore;
+            } else if (answer !== '') {
+                feedbackElement.innerHTML = 'Niestety, to nie jest poprawna odpowiedź. Spróbuj ponownie!';
+                feedbackElement.classList.add('incorrect');
+                document.getElementById('word').innerHTML = currentWord.word.replace('...', `<span class="highlight">${currentWord.correct}</span>`);
+                incorrectScore++;
+                document.getElementById('incorrect-score').innerText = incorrectScore;
+            }
+
+            isAnswering = false;
+        }
+
+        function startTimer() {
+            timeLeft = 10;
+            document.getElementById('time-left').innerText = timeLeft;
+            timer = setInterval(function() {
+                timeLeft--;
+                document.getElementById('time-left').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById('rz-button').disabled = true;
+                    document.getElementById('ż-button').disabled = true;
+                    document.getElementById('next-button').disabled = false;
+                    isAnswering = false;
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            startTimer();
+        }
+
+        function nextWord() {
+            loadNewWord();
+        }
+
+        window.onload = loadNewWord;
+    </script>
+</body>
+</html>
