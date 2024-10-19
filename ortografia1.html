@@ -10,13 +10,21 @@
             text-align: center;
             padding: 10px;
             box-sizing: border-box;
-            height: 97vh;
+            /* height: 97vh; */
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
         }
+
+        @media screen and (max-width: 768px) {
+            body {
+                height: 97vh;
+            }
+        }
+        
+        
         #image-container {
             height: 400px;
             max-width: 100%;
