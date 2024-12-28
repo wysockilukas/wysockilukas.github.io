@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ortografia - U czy Ó?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 10px;
+            box-sizing: border-box;
+            /* height: 97vh; */
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        @media screen and (max-width: 768px) {
+            body {
+                height: 97vh;
+            }
+        }
+        
+        
+        #image-container {
+            height: 400px;
+            max-width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #word-image {
+            max-height: 100%;
+            width: auto;
+        }
+        #word-container {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .button {
+            padding: 10px;
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+        #buttons-container {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            max-width: 300px;
+            margin-top: 15px;
+        }
+        #feedback {
+            font-size: 1em;
+            margin-top: 10px;
+        }
+        .highlight {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        #score-container {
+            font-size: 0.9em;
+            margin-top: 10px;
+            padding: 5px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        #timer {
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        #next-button {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div id="image-container">
+        <img id="word-image" src="" alt="Słowo">
+    </div>
+    <div id="word-container">
+        <span id="word"></span>
+    </div>
+    <div id="buttons-container">
+        <button id="u-button" class="button" onclick="checkAnswer('u')">u</button>
+        <button id="ó-button" class="button" onclick="checkAnswer('ó')">ó</button>
+    </div>
+    <div id="feedback"></div>
+    <div id="score-container">
+        <div>Poprawne odpowiedzi: <span id="correct-score">0</span></div>
+        <div>Niepoprawne odpowiedzi: <span id="incorrect-score">0</span></div>
+    </div>
+    <div id="timer">Pozostały czas: <span id="time-left">10</span> sekund</div>
+    <button id="next-button" class="button" onclick="nextWord()">Następny obrazek</button>
+
+    <script>
+
+const words = [
+{ image: 'images_ou/auto.png', word: 'a...to', correct: 'u' },
+{ image: 'images_ou/bluza.png', word: 'bl...za', correct: 'u' },
+{ image: 'images_ou/buda.png', word: 'b...da', correct: 'u' },
+{ image: 'images_ou/burak.png', word: 'b...rak', correct: 'u' },
+{ image: 'images_ou/bułka.png', word: 'b...łka', correct: 'u' },
+{ image: 'images_ou/bóbr.png', word: 'b...br', correct: 'ó' },
+{ image: 'images_ou/cebula.png', word: 'ceb...la', correct: 'u' },
+{ image: 'images_ou/chór.png', word: 'ch...r', correct: 'ó' },
+{ image: 'images_ou/cukierki.png', word: 'c...kierki', correct: 'u' },
+{ image: 'images_ou/czwórka.png', word: 'czw...rka', correct: 'ó' },
+{ image: 'images_ou/córka.png', word: 'c...rka', correct: 'ó' },
+{ image: 'images_ou/dróżka.png', word: 'dr...żka', correct: 'ó' },
+{ image: 'images_ou/gruszka.png', word: 'gr...szka', correct: 'u' },
+{ image: 'images_ou/guzik.png', word: 'g...zik', correct: 'u' },
+{ image: 'images_ou/góra.png', word: 'g...ra', correct: 'ó' },
+{ image: 'images_ou/góral.png', word: 'g...ral', correct: 'ó' },
+{ image: 'images_ou/górnik.png', word: 'g...rnik', correct: 'ó' },
+{ image: 'images_ou/jaskółka.png', word: 'jask...łka', correct: 'ó' },
+{ image: 'images_ou/julka.png', word: 'j...lka', correct: 'u' },
+{ image: 'images_ou/Józek.png', word: 'J...zek', correct: 'ó' },
+{ image: 'images_ou/klucz.png', word: 'kl...cz', correct: 'u' },
+{ image: 'images_ou/kogut.png', word: 'kog...t', correct: 'u' },
+{ image: 'images_ou/król.png', word: 'kr...l', correct: 'ó' },
+{ image: 'images_ou/królewicz.png', word: 'kr...lewicz', correct: 'ó' },
+{ image: 'images_ou/królewna.png', word: 'kr...lewna', correct: 'ó' },
+{ image: 'images_ou/królik.png', word: 'kr...lik', correct: 'ó' },
+{ image: 'images_ou/królowa.png', word: 'kr...lowa', correct: 'ó' },
+{ image: 'images_ou/Kuba.png', word: 'K...ba', correct: 'u' },
+{ image: 'images_ou/kubek.png', word: 'k...bek', correct: 'u' },
+{ image: 'images_ou/kura.png', word: 'k...ra', correct: 'u' },
+{ image: 'images_ou/kózka.png', word: 'k...zka', correct: 'ó' },
+{ image: 'images_ou/kłódka.png', word: 'kł...dka', correct: 'ó' },
+{ image: 'images_ou/lupa.png', word: 'l...pa', correct: 'u' },
+{ image: 'images_ou/mamut.png', word: 'mam...t', correct: 'u' },
+{ image: 'images_ou/miód.png', word: 'mi...d', correct: 'ó' },
+{ image: 'images_ou/mrówka.png', word: 'mr...wka', correct: 'ó' },
+{ image: 'images_ou/mróz.png', word: 'mr...z', correct: 'ó' },
+{ image: 'images_ou/mur.png', word: 'm...r', correct: 'u' },
+{ image: 'images_ou/muszla.png', word: 'm...szla', correct: 'u' },
+{ image: 'images_ou/nóż.png', word: 'n...ż', correct: 'ó' },
+{ image: 'images_ou/obrócić.png', word: 'obr...cić', correct: 'ó' },
+{ image: 'images_ou/ogród.png', word: 'ogr...d', correct: 'ó' },
+{ image: 'images_ou/ogórek.png', word: 'og...rek', correct: 'ó' },
+{ image: 'images_ou/ołówek.png', word: 'oł...wek', correct: 'ó' },
+{ image: 'images_ou/papuga.png', word: 'pap...ga', correct: 'u' },
+{ image: 'images_ou/pieróg.png', word: 'pier...g', correct: 'ó' },
+{ image: 'images_ou/piórnik.png', word: 'pi...rnik', correct: 'ó' },
+{ image: 'images_ou/pióro.png', word: 'pi...ro', correct: 'ó' },
+{ image: 'images_ou/pokój.png', word: 'pok...j', correct: 'ó' },
+{ image: 'images_ou/próg.png', word: 'pr...g', correct: 'ó' },
+{ image: 'images_ou/półka.png', word: 'p...łka', correct: 'ó' },
+{ image: 'images_ou/rumianek.png', word: 'r...mianek', correct: 'u' },
+{ image: 'images_ou/róg.png', word: 'r...g', correct: 'ó' },
+{ image: 'images_ou/rów.png', word: 'r...w', correct: 'ó' },
+{ image: 'images_ou/róża.png', word: 'r...ża', correct: 'ó' },
+{ image: 'images_ou/samochód.png', word: 'samoch...d', correct: 'ó' },
+{ image: 'images_ou/siódemka.png', word: 'si...demka', correct: 'ó' },
+{ image: 'images_ou/skórka.png', word: 'sk...rka', correct: 'ó' },
+{ image: 'images_ou/stół.png', word: 'st...ł', correct: 'ó' },
+{ image: 'images_ou/sukienka.png', word: 's...kienka', correct: 'u' },
+{ image: 'images_ou/szóstka.png', word: 'sz...stka', correct: 'ó' },
+{ image: 'images_ou/sójka.png', word: 's...jka', correct: 'ó' },
+{ image: 'images_ou/sól.png', word: 's...l', correct: 'ó' },
+{ image: 'images_ou/sówki.png', word: 's...wki', correct: 'ó' },
+{ image: 'images_ou/słój.png', word: 'sł...j', correct: 'ó' },
+{ image: 'images_ou/tchórz.png', word: 'tch...rz', correct: 'ó' },
+{ image: 'images_ou/ubrania.png', word: '...brania', correct: 'u' },
+{ image: 'images_ou/uczeń.png', word: '...czeń', correct: 'u' },
+{ image: 'images_ou/ulica.png', word: '...lica', correct: 'u' },
+{ image: 'images_ou/uszy.png', word: '...szy', correct: 'u' },
+{ image: 'images_ou/wieczór.png', word: 'wiecz...r', correct: 'ó' },
+{ image: 'images_ou/wiewiórka.png', word: 'wiewi...rka', correct: 'ó' },
+{ image: 'images_ou/wiózł.png', word: 'wi...zł', correct: 'ó' },
+{ image: 'images_ou/wróbel.png', word: 'wr...bel', correct: 'ó' },
+{ image: 'images_ou/wrócić.png', word: 'wr...cić', correct: 'ó' },
+{ image: 'images_ou/wróg.png', word: 'wr...g', correct: 'ó' },
+{ image: 'images_ou/wróżka.png', word: 'wr...żka', correct: 'ó' },
+{ image: 'images_ou/wór.png', word: 'w...r', correct: 'ó' },
+{ image: 'images_ou/wóz.png', word: 'w...z', correct: 'ó' },
+{ image: 'images_ou/włóczka.png', word: 'wł...czka', correct: 'ó' },
+{ image: 'images_ou/ósemka.png', word: '...semka', correct: 'ó' },
+{ image: 'images_ou/Łukasz.png', word: 'Ł...kasz', correct: 'u' },
+{ image: 'images_ou/łódź.png', word: 'ł...dź', correct: 'ó' },
+{ image: 'images_ou/łóżko.png', word: 'ł...żko', correct: 'ó' },
+{ image: 'images_ou/żółw.png', word: 'ż...łw', correct: 'ó' }
+];
+
+
+        let currentWord;
+        let correctScore = 0;
+        let incorrectScore = 0;
+        let timer;
+        let timeLeft = 10;
+        let isAnswering = false;
+
+        function getRandomWord() {
+            return words[Math.floor(Math.random() * words.length)];
+        }
+
+        function loadNewWord() {
+            currentWord = getRandomWord();
+            document.getElementById('word-image').src = currentWord.image;
+            document.getElementById('word').innerHTML = currentWord.word;
+            document.getElementById('feedback').innerHTML = '';
+            document.getElementById('u-button').disabled = false;
+            document.getElementById('ó-button').disabled = false;
+            document.getElementById('next-button').disabled = true;
+            resetTimer();
+            isAnswering = true;
+        }
+
+        function checkAnswer(answer) {
+            if (!isAnswering) return;
+            clearInterval(timer);
+            const feedbackElement = document.getElementById('feedback');
+            document.getElementById('u-button').disabled = true;
+            document.getElementById('ó-button').disabled = true;
+            document.getElementById('next-button').disabled = false;
+
+            if (answer === currentWord.correct) {
+                feedbackElement.innerHTML = 'Brawo! To jest poprawna odpowiedź!';
+                feedbackElement.classList.remove('incorrect');
+                feedbackElement.classList.add('highlight');
+                document.getElementById('word').innerHTML = currentWord.word.replace('...', `<span class="highlight">${answer}</span>`);
+                correctScore++;
+                document.getElementById('correct-score').innerText = correctScore;
+            } else if (answer !== '') {
+                feedbackElement.innerHTML = 'Niestety, to nie jest poprawna odpowiedź. Spróbuj ponownie!';
+                feedbackElement.classList.add('incorrect');
+                document.getElementById('word').innerHTML = currentWord.word.replace('...', `<span class="highlight">${currentWord.correct}</span>`);
+                incorrectScore++;
+                document.getElementById('incorrect-score').innerText = incorrectScore;
+            }
+
+            isAnswering = false;
+        }
+
+        function startTimer() {
+            timeLeft = 10;
+            document.getElementById('time-left').innerText = timeLeft;
+            timer = setInterval(function() {
+                timeLeft--;
+                document.getElementById('time-left').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById('u-button').disabled = true;
+                    document.getElementById('ó-button').disabled = true;
+                    document.getElementById('next-button').disabled = false;
+                    isAnswering = false;
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            startTimer();
+        }
+
+        function nextWord() {
+            loadNewWord();
+        }
+
+        window.onload = loadNewWord;
+    </script>
+</body>
+</html>
